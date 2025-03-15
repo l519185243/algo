@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <bits/stdc++.h>
 #define endl "\n"
 #define YES "yes\n"
