@@ -4,6 +4,7 @@
 #define YES "yes\n"
 #define NO "no\n"
 #define all(a) (a).begin(), (a).end()
+#define rall(a) (a).rbegin(), (a).rend()
 
 using namespace std;
 using ll = long long;
