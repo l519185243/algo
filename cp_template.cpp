@@ -5,6 +5,7 @@
 #define NO "no\n"
 #define all(a) (a).begin(), (a).end()
 #define rall(a) (a).rbegin(), (a).rend()
+#define fn(fc) auto fc = [&]
 
 using namespace std;
 using ll = long long;
