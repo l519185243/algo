@@ -165,58 +165,58 @@ struct SEG {
   INFO apply(int l, int r, ll v = 0, OP &op = NONE) {
     return apply(A[0], l, r, v, op);
   }
-  INFO apply(INFO &RT, int l, int r, int v, OP &op) {
-    if (RT.inner(l, r) and op.inner_hit(RT, v)) {
-      op.inner_op(RT, v);
-      return RT;
+  INFO apply(INFO &rt, int l, int r, int v, OP &op) {
+    if (rt.inner(l, r) and op.inner_hit(rt, v)) {
+      op.inner_op(rt, v);
+      return rt;
     }
-    if (RT.outer(l, r) and op.outer_hit(RT, v)) {
-      op.outer_op(RT, v);
+    if (rt.outer(l, r) and op.outer_hit(rt, v)) {
+      op.outer_op(rt, v);
       return INFO();
     }
-    RT.down();
-    INFO L = apply(*RT.L, l, r, v, op);
-    INFO R = apply(*RT.R, l, r, v, op);
-    RT.up();
+    rt.down();
+    INFO L = apply(*rt.L, l, r, v, op);
+    INFO R = apply(*rt.R, l, r, v, op);
+    rt.up();
     return L.merge(R);
   }
   // For teaching only, all followings can be replaced by `apply`
   void add(int l, int r, ll v) { add(A[0], l, r, v); }
   void chmax(int l, int r, ll v) { chmax(A[0], l, r, v); }
   INFO qry(int l, int r) { return qry(A[0], l, r); }
-  void add(INFO &RT, int l, int r, ll v) {
-    if (RT.inner(l, r)) {
-      RT.chadd(v);
+  void add(INFO &rt, int l, int r, ll v) {
+    if (rt.inner(l, r)) {
+      rt.chadd(v);
       return;
     }
-    if (RT.outer(l, r))
+    if (rt.outer(l, r))
       return;
-    RT.down();
-    add(*RT.L, l, r, v);
-    add(*RT.R, l, r, v);
-    RT.up();
+    rt.down();
+    add(*rt.L, l, r, v);
+    add(*rt.R, l, r, v);
+    rt.up();
   }
-  void chmax(INFO &RT, int l, int r, ll v) {
-    if (RT.inner(l, r) and RT.mn < v and v < RT.se_mn) {
-      RT.chmax(v);
+  void chmax(INFO &rt, int l, int r, ll v) {
+    if (rt.inner(l, r) and rt.mn < v and v < rt.se_mn) {
+      rt.chmax(v);
       return;
     }
-    if (RT.outer(l, r) or v <= RT.mn)
+    if (rt.outer(l, r) or v <= rt.mn)
       return;
-    RT.down();
-    chmax(*RT.L, l, r, v);
-    chmax(*RT.R, l, r, v);
-    RT.up();
+    rt.down();
+    chmax(*rt.L, l, r, v);
+    chmax(*rt.R, l, r, v);
+    rt.up();
   }
-  INFO qry(INFO &RT, int l, int r) {
-    if (RT.inner(l, r))
-      return RT;
-    if (RT.outer(l, r))
+  INFO qry(INFO &rt, int l, int r) {
+    if (rt.inner(l, r))
+      return rt;
+    if (rt.outer(l, r))
       return INFO();
-    RT.down();
-    INFO L = qry(*RT.L, l, r);
-    INFO R = qry(*RT.R, l, r);
-    RT.up();
+    rt.down();
+    INFO L = qry(*rt.L, l, r);
+    INFO R = qry(*rt.R, l, r);
+    rt.up();
     return L.merge(R);
   }
 };
@@ -224,19 +224,19 @@ struct SEG {
 OP SEG::NONE;
 OP SEG::ADD = {.inner_hit = OP::TRUE,
                .outer_hit = OP::TRUE,
-               .inner_op = [](INFO &info, ll v) { info.chadd(v); },
+               .inner_op = [](INFO &rt, ll v) { rt.chadd(v); },
                .outer_op = OP::NONE};
 
 OP SEG::CHMAX = {
-    .inner_hit = [](INFO &info, ll v) { return info.mn < v < info.se_mn; },
-    .outer_hit = [](INFO &info, ll v) { return v <= info.mn; },
-    .inner_op = [](INFO &info, ll v) { info.chmax(v); },
+    .inner_hit = [](INFO &rt, ll v) { return rt.mn < v < rt.se_mn; },
+    .outer_hit = [](INFO &rt, ll v) { return v <= rt.mn; },
+    .inner_op = [](INFO &rt, ll v) { rt.chmax(v); },
     .outer_op = OP::NONE};
 
 OP SEG::CHMIN = {
-    .inner_hit = [](INFO &info, ll v) { return info.se_mx < v < info.mx; },
-    .outer_hit = [](INFO &info, ll v) { return v >= info.mx; },
-    .inner_op = [](INFO &info, ll v) { info.chmin(v); },
+    .inner_hit = [](INFO &rt, ll v) { return rt.se_mx < v < rt.mx; },
+    .outer_hit = [](INFO &rt, ll v) { return v >= rt.mx; },
+    .inner_op = [](INFO &rt, ll v) { rt.chmin(v); },
     .outer_op = OP::NONE};
 
 } // namespace SEG_T
