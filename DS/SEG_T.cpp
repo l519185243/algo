@@ -134,6 +134,11 @@ struct SEG {
   static OP ADD, CHMIN, CHMAX, MIN, MAX, NONE;
   vector<INFO> A;
   int ptr = 1;
+  SEG(vector<ll> &_A, int cap) {
+    int n = _A.size();
+    A.resize(cap);
+    A[0] = build(0, n - 1, _A);
+  }
   SEG(vector<ll> &_A) {
     int n = _A.size();
     A.resize(n << 2);
