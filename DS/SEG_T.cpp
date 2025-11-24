@@ -7,14 +7,14 @@ using ll = long long;
 struct INFO {
   static const ll INF = 1e18;
   ll i, l, r, mx, se_mx, mx_c, mn, se_mn, mn_c, sum, add;
-  INFO *L, *R;
+  INFO *cl, *cr;
 
   INFO() { init(); }
-  INFO(int _l, int _r, INFO *_L = nullptr, INFO *_R = nullptr) {
+  INFO(int _l, int _r, INFO *_cl = nullptr, INFO *_cr = nullptr) {
     l = _l;
     r = _r;
-    L = _L;
-    R = _R;
+    cl = _cl;
+    cr = _cr;
     init();
   }
 
@@ -68,16 +68,16 @@ struct INFO {
   }
 
   void down() {
-    assert(L and R);
-    L->chall(mn, mx, add);
-    R->chall(mn, mx, add);
+    assert(cl and cr);
+    cl->chall(mn, mx, add);
+    cr->chall(mn, mx, add);
     add = 0;
   }
 
   void up() {
-    assert(L and R);
-    INFO T = *L;
-    T = T.merge(*R);
+    assert(cl and cr);
+    INFO T = *cl;
+    T = T.merge(*cr);
     mx = T.mx, se_mx = T.se_mx, mx_c = T.mx_c;
     mn = T.mn, se_mn = T.se_mn, mn_c = T.mn_c;
     sum = T.sum;
@@ -134,14 +134,11 @@ struct SEG {
   static OP ADD, CHMIN, CHMAX, MIN, MAX, NONE;
   vector<INFO> A;
   int ptr = 1;
-  SEG(vector<ll> &_A, int cap) {
-    int n = _A.size();
+  SEG(vector<ll> &_A, int cap) { build(_A, cap); }
+  SEG(vector<ll> &_A) { build(_A, int(_A.size()) << 1); }
+  void build(vector<ll> _A, int cap) {
     A.resize(cap);
-    A[0] = build(0, n - 1, _A);
-  }
-  SEG(vector<ll> &_A) {
     int n = _A.size();
-    A.resize(n << 2);
     A[0] = build(0, n - 1, _A);
   }
   INFO &alloc(int l, int r, INFO *L = nullptr, INFO *R = nullptr) {
@@ -151,16 +148,16 @@ struct SEG {
   }
   INFO &build(int l, int r, vector<ll> &_A) {
     if (l == r) {
-      INFO &T = alloc(l, r);
-      T.set(_A[l]);
-      return T;
+      INFO &rt = alloc(l, r);
+      rt.set(_A[l]);
+      return rt;
     }
     int m = l + r >> 1;
-    INFO &L = build(l, m, _A);
-    INFO &R = build(m + 1, r, _A);
-    INFO &T = alloc(l, r, &L, &R);
-    T.up();
-    return T;
+    INFO &cl = build(l, m, _A);
+    INFO &cr = build(m + 1, r, _A);
+    INFO &rt = alloc(l, r, &cl, &cr);
+    rt.up();
+    return rt;
   }
   INFO apply(int l, int r, ll v = 0, OP &op = NONE) {
     return apply(A[0], l, r, v, op);
@@ -175,10 +172,10 @@ struct SEG {
       return INFO();
     }
     rt.down();
-    INFO L = apply(*rt.L, l, r, v, op);
-    INFO R = apply(*rt.R, l, r, v, op);
+    INFO cl = apply(*rt.cl, l, r, v, op);
+    INFO cr = apply(*rt.cr, l, r, v, op);
     rt.up();
-    return L.merge(R);
+    return cl.merge(cr);
   }
   // For teaching only, all followings can be replaced by `apply`
   void add(int l, int r, ll v) { add(A[0], l, r, v); }
@@ -192,8 +189,8 @@ struct SEG {
     if (rt.outer(l, r))
       return;
     rt.down();
-    add(*rt.L, l, r, v);
-    add(*rt.R, l, r, v);
+    add(*rt.cl, l, r, v);
+    add(*rt.cr, l, r, v);
     rt.up();
   }
   void chmax(INFO &rt, int l, int r, ll v) {
@@ -204,8 +201,8 @@ struct SEG {
     if (rt.outer(l, r) or v <= rt.mn)
       return;
     rt.down();
-    chmax(*rt.L, l, r, v);
-    chmax(*rt.R, l, r, v);
+    chmax(*rt.cl, l, r, v);
+    chmax(*rt.cr, l, r, v);
     rt.up();
   }
   INFO qry(INFO &rt, int l, int r) {
@@ -214,10 +211,10 @@ struct SEG {
     if (rt.outer(l, r))
       return INFO();
     rt.down();
-    INFO L = qry(*rt.L, l, r);
-    INFO R = qry(*rt.R, l, r);
+    INFO cl = qry(*rt.cl, l, r);
+    INFO cr = qry(*rt.cr, l, r);
     rt.up();
-    return L.merge(R);
+    return cl.merge(cr);
   }
 };
 
