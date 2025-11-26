@@ -10,17 +10,9 @@
 using namespace std;
 using ll = long long;
 
-void print() { cout << endl; }
-
-template <class T, class... Args> void print(T head, Args... rest) {
-  cout << head << ' ';
-  print(rest...);
-}
-
-template <class T, class... Args> void dbg(T head, Args... rest) {
+template <typename... Args> void dbg(Args &&...args) {
 #ifdef DEBUG
-  cout << "[DBG] ";
-  print(head, rest...);
+  ((cout << args << ' '), ...) << endl;
 #endif
 }
 
